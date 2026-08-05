@@ -89,7 +89,8 @@ Pemicuan otomatis Payment Reminder & Tax Invoice via CoCo CLI trigger email ke P
     setIsExecuting(true)
 
     try {
-      const res = await fetch('http://localhost:8080/api/cortex/query', {
+      const API_BASE = import.meta.env.VITE_API_URL || ''
+      const res = await fetch(`${API_BASE}/api/cortex/query`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: nlQuery, model: selectedModel }),
