@@ -1,0 +1,76 @@
+{
+  "conversations": [
+    {
+      "id": "conv1",
+      "profile": "https://randomuser.me/api/portraits/men/32.jpg",
+      "username": "capt_hendra",
+      "fullName": "Capt. Hendra Wijaya",
+      "title": "Port Operations Lead - Evergreen",
+      "messages": [
+        {
+          "sender": "You",
+          "message": "Terima kasih Capt. Hendra! Draft Master B/L sudah kami revisi sesuai data PEB.",
+          "timestamp": "2026-08-03T11:15:15"
+        },
+        {
+          "sender": "Capt. Hendra",
+          "message": "Sip Pak, kontainer EVRG-981240 sudah verifikasi gate-in di KOJA Terminal.",
+          "timestamp": "2026-08-03T11:11:30"
+        },
+        {
+          "sender": "You",
+          "message": "Bagaimana dengan jadwal muat kapalnya (ETD)?",
+          "timestamp": "2026-08-03T09:26:50"
+        },
+        {
+          "sender": "Capt. Hendra",
+          "message": "ETD tetap besok jam 16:00 WIB, semua dokumen PEB dan SPPB sudah terbit elektronik.",
+          "timestamp": "2026-08-03T09:25:15"
+        }
+      ]
+    },
+    {
+      "id": "conv2",
+      "profile": "https://randomuser.me/api/portraits/women/45.jpg",
+      "username": "siti.customs",
+      "fullName": "Siti Nurhaliza",
+      "title": "Customs Brokerage Supervisor",
+      "messages": [
+        {
+          "sender": "Siti",
+          "message": "Dokumen PIB impor AWB-88219 sudah terbit SPPB dari Bea Cukai.",
+          "timestamp": "2026-08-03T10:35:00"
+        },
+        {
+          "sender": "You",
+          "message": "Alhamdulillah, terima kasih Bu Siti untuk koordinasi Jalur Merahnya.",
+          "timestamp": "2026-08-03T10:32:00"
+        },
+        {
+          "sender": "Siti",
+          "message": "Sama-sama, armada pengangkut dari gudang TPS Air Cargo bisa langsung ambil barang.",
+          "timestamp": "2026-08-03T10:30:00"
+        }
+      ]
+    },
+    {
+      "id": "conv3",
+      "profile": "https://randomuser.me/api/portraits/men/64.jpg",
+      "username": "phoenix.supply",
+      "fullName": "Phoenix Baker",
+      "title": "Supply Chain Director - PT Nusantara Eksportindo",
+      "messages": [
+        {
+          "sender": "You",
+          "message": "Free time detention 12 hari untuk 4x40ft HC reefer di Teluk Lamong sudah disetujui pelayaran.",
+          "timestamp": "2026-08-02T14:20:00"
+        },
+        {
+          "sender": "Phoenix",
+          "message": "Sangat membantu, terima kasih tim ERP One!",
+          "timestamp": "2026-08-02T14:15:00"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "to studio resource",
+  "description": "Imported from GitHub: dev-rexpro/erp1",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
