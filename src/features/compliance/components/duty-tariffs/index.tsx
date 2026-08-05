@@ -316,7 +316,7 @@ export function DutyTariffsView() {
                 {/* Status Bar */}
                 {inswSearched && (
                   <div className="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t">
-                    <span>Hasil pencarian untuk: &ldquo;<strong class="text-foreground font-medium">{lastQuery}</strong>&rdquo;</span>
+                    <span>Hasil pencarian untuk: &ldquo;<strong className="text-foreground font-medium">{lastQuery}</strong>&rdquo;</span>
                     <span>Sekitar {inswTotal} item ({inswExecTime} detik)</span>
                   </div>
                 )}
