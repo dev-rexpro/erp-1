@@ -71,12 +71,12 @@ function parseMarkdown(text: string) {
         </strong>
       )
     }
-    if (part.startsWith('[') && part.endsWith(']')) {
+    if (part.startsWith('[') && part.endsWith(']') && /^\d+$/.test(part.slice(1, -1))) {
       const num = part.slice(1, -1)
       return (
         <span
           key={index}
-          className='inline-flex items-center justify-center size-3.5 bg-muted text-[8px] text-muted-foreground font-semibold rounded-full mx-0.5 align-middle select-none'
+          className='inline-flex items-center justify-center size-3.5 bg-muted text-[8px] text-muted-foreground font-semibold rounded-full mx-0.5 align-middle select-none shrink-0'
         >
           {num}
         </span>
@@ -192,7 +192,7 @@ Apakah Anda ingin Saya memicu otomatis email Payment Reminder kepadanya sekarang
           contactEmail: 'budi.s@rexcorp.cloud',
           actionType: 'email_reminder',
           confirmLabel: 'Confirm & Send Reminder',
-          cancelLabel: 'Later / No',
+          cancelLabel: 'Later',
           status: 'pending',
         },
       }
@@ -225,7 +225,7 @@ Apakah Anda ingin Saya mengirimkan email inquiry revisi ETA ke pihak OOCL?`,
           contactEmail: 'hendra.tan@oocl.com',
           actionType: 'email_eta',
           confirmLabel: 'Confirm & Send Inquiry',
-          cancelLabel: 'Later / No',
+          cancelLabel: 'Later',
           status: 'pending',
         },
       }
@@ -256,7 +256,7 @@ Apakah Anda ingin Saya mengirimkan email pemberitahuan resmi terkait hal ini kep
           contactEmail: 'risa.amelia@rexcorp.cloud',
           actionType: 'email_ceisa',
           confirmLabel: 'Confirm & Send Email',
-          cancelLabel: 'Later / No',
+          cancelLabel: 'Later',
           status: 'pending',
         },
       }
@@ -337,7 +337,7 @@ Apakah Anda ingin Saya mengirimkan email pemberitahuan resmi terkait hal ini kep
           contactEmail: 'risa.amelia@rexcorp.cloud',
           actionType: 'email_ceisa',
           confirmLabel: 'Confirm & Send Email',
-          cancelLabel: 'Later / No',
+          cancelLabel: 'Later',
           status: 'pending',
         },
       }
@@ -383,7 +383,7 @@ Apakah Anda ingin Saya mengirimkan email tindak lanjut kepadanya sekarang?`,
           contactEmail: 'risa.amelia@rexcorp.cloud',
           actionType: 'email_ceisa',
           confirmLabel: 'Confirm & Send Email',
-          cancelLabel: 'Later / No',
+          cancelLabel: 'Later',
           status: 'pending',
         },
       }
@@ -408,13 +408,67 @@ Apakah Anda ingin Saya mengirimkan email tindak lanjut kepadanya sekarang?`,
     setInput('')
     setIsLoading(true)
 
-    // Simulasi delay retrieval data Snowflake (300ms)
-    setTimeout(() => {
-      const { content: fullContent, actionCard } = processMasbroIntelligence(text)
+    // Process Masbro Intelligence with live Cortex AI engine
+    const startProcess = async () => {
+      let { content: fullContent, actionCard } = processMasbroIntelligence(text)
+
+      try {
+        const res = await fetch('/api/cortex/query', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: text }),
+        })
+        if (res.ok) {
+          const data = await res.json()
+          if (data.response && data.success) {
+            fullContent = data.response
+            const qLower = text.toLowerCase()
+            if (!actionCard) {
+              if (qLower.includes('invoice') || qLower.includes('cargill') || qLower.includes('krakatau') || qLower.includes('overdue') || qLower.includes('tagihan')) {
+                actionCard = {
+                  id: `card-inv-${Date.now()}`,
+                  title: 'Kirim Payment Reminder Email',
+                  contactName: 'Budi Santoso',
+                  contactEmail: 'budi.s@rexcorp.cloud',
+                  actionType: 'email_reminder',
+                  confirmLabel: 'Confirm & Send Reminder',
+                  cancelLabel: 'Later',
+                  status: 'pending',
+                }
+              } else if (qLower.includes('shipment') || qLower.includes('container') || qLower.includes('track') || qLower.includes('shanghai') || qLower.includes('lacak')) {
+                actionCard = {
+                  id: `card-shp-${Date.now()}`,
+                  title: 'Kirim Email Inquiry Revisi ETA ke OOCL',
+                  contactName: 'Hendra Tan (OOCL Care)',
+                  contactEmail: 'hendra.tan@oocl.com',
+                  actionType: 'email_eta',
+                  confirmLabel: 'Confirm & Send Inquiry',
+                  cancelLabel: 'Later',
+                  status: 'pending',
+                }
+              } else if (qLower.includes('ceisa') || qLower.includes('pib') || qLower.includes('peb') || qLower.includes('hold') || qLower.includes('cukai')) {
+                actionCard = {
+                  id: `card-pib-${Date.now()}`,
+                  title: 'Kirim Email Tindak Lanjut ke Risa Amelia',
+                  contactName: 'Risa Amelia',
+                  contactEmail: 'risa.amelia@rexcorp.cloud',
+                  actionType: 'email_ceisa',
+                  confirmLabel: 'Confirm & Send Email',
+                  cancelLabel: 'Later',
+                  status: 'pending',
+                }
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.log('Cortex AI Backend Proxy offline, using local intelligence engine.')
+      }
+
       const aiMsgId = Math.random().toString(36).substring(7)
       const timestamp = new Date()
 
-      // Insert message AI kosong awal
+      // Insert initial AI message placeholder
       setMessages((prev) => [
         ...prev,
         {
@@ -427,7 +481,7 @@ Apakah Anda ingin Saya mengirimkan email tindak lanjut kepadanya sekarang?`,
       ])
 
       let charIndex = 0
-      const chunkSize = 2
+      const chunkSize = 3
 
       const streamInterval = setInterval(() => {
         charIndex += chunkSize
@@ -443,8 +497,10 @@ Apakah Anda ingin Saya mengirimkan email tindak lanjut kepadanya sekarang?`,
           clearInterval(streamInterval)
           setIsLoading(false)
         }
-      }, 15)
-    }, 300)
+      }, 12)
+    }
+
+    startProcess()
   }
 
   const handleActionConfirm = (cardId: string, email: string, name: string) => {
@@ -614,10 +670,10 @@ Pemberitahuan telah dicatat pada log aktivitas sistem ERP-ONE & Snowflake audit 
         <>
           {/* ===== Standard Chat Body ===== */}
           <div className='flex-1 overflow-y-auto p-4 flex flex-col gap-6 bg-background'>
-        {messages.length === 0 ? (
-          <div className='flex-1 flex flex-col justify-center px-4 py-8 gap-8'>
-            {/* Inline CSS injection for fade and slide down transition */}
-            <style>{`
+            {messages.length === 0 ? (
+              <div className='flex-1 flex flex-col justify-center px-4 py-8 gap-8'>
+                {/* Inline CSS injection for fade and slide down transition */}
+                <style>{`
               @keyframes fadeSlideDown {
                 from {
                   opacity: 0;
@@ -633,191 +689,197 @@ Pemberitahuan telah dicatat pada log aktivitas sistem ERP-ONE & Snowflake audit 
               }
             `}</style>
 
-            {/* Rotating Greeting Header */}
-            <div className='text-center space-y-2'>
-              <h2
-                key={textIndex}
-                className='text-3xl font-medium tracking-tight text-foreground animate-fade-slide-down'
-              >
-                {ROTATING_TEXTS[textIndex]}
-              </h2>
-            </div>
+                {/* Rotating Greeting Header */}
+                <div className='text-center space-y-2'>
+                  <h2
+                    key={textIndex}
+                    className='text-3xl font-medium tracking-tight text-foreground animate-fade-slide-down'
+                  >
+                    {ROTATING_TEXTS[textIndex]}
+                  </h2>
+                </div>
 
-            {/* Suggestions list (Simple English Freight Forwarding) */}
-            <div className='flex flex-col gap-3 text-left pl-2 pt-2 border-t border-border/30'>
-              <button
-                onClick={() => handleSend('Check invoice status')}
-                className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
-              >
-                <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
-                <span>Check invoice status</span>
-              </button>
-              <button
-                onClick={() => handleSend('Create a new service quotation for ocean freight')}
-                className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
-              >
-                <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
-                <span>Create service quotation</span>
-              </button>
-              <button
-                onClick={() => handleSend('Track shipment container OOLU2800014')}
-                className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
-              >
-                <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
-                <span>Track shipment container</span>
-              </button>
-              <button
-                onClick={() => handleSend('Check CEISA customs hold status')}
-                className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
-              >
-                <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
-                <span>Check CEISA customs status</span>
-              </button>
-            </div>
-          </div>
-        ) : (
-          <div className='flex flex-col gap-6'>
-            {messages.map((msg, idx) => (
-              <div
-                key={msg.id}
-                className={cn(
-                  'flex w-full leading-relaxed',
-                  msg.role === 'user' ? 'justify-end' : 'justify-start'
-                )}
-              >
-                {msg.role === 'user' ? (
-                  /* User message: Styled with min-h-8 and rounded-md to match X button, no avatar */
-                  <div className='rounded-md px-3 py-1 min-h-8 flex items-center text-xs bg-sidebar-accent/80 text-foreground border border-sidebar-border max-w-[85%] shadow-xs'>
-                    {msg.content}
-                  </div>
-                ) : (
-                  /* AI message: Label and timestamp, text directly below */
-                  <div className='flex flex-col gap-2 w-full text-xs text-foreground'>
-                    <div className='flex items-center shrink-0 text-primary'>
-                      <span className='text-xs font-semibold'>masbro</span><span className='text-[10px] text-primary/70 mx-0.5'>|</span><span className='text-[10px]'>{new Date(msg.timestamp).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
-                    </div>
-                    <div className='pl-0 text-foreground/90 font-sans leading-relaxed flex flex-col gap-1'>
-                      {formatMessageContent(msg.content)}
-                      {isLoading && idx === messages.length - 1 && (
-                        <span className='inline-block size-2 bg-primary animate-pulse rounded-full ml-1 align-middle' />
-                      )}
-
-                      {/* Action Confirmation Card Component */}
-                      {msg.actionCard && (!isLoading || idx !== messages.length - 1) && (
-                        <div className='mt-2.5 p-3 rounded-lg border border-primary/25 bg-primary/5 dark:bg-primary/10 flex flex-col gap-2.5 shadow-xs'>
-                          <div className='flex items-center justify-between gap-2'>
-                            <div className='text-xs font-semibold text-foreground'>
-                              <span>{msg.actionCard.title}</span>
-                            </div>
-                            <span className='text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 shrink-0 font-normal'>
-                              Action Required
-                            </span>
-                          </div>
-
-                          <div className='text-[11px] text-muted-foreground flex flex-col gap-0.5 pl-0.5'>
-                            <span>Penerima: <strong className='text-foreground font-medium'>{msg.actionCard.contactName}</strong> ({msg.actionCard.contactEmail})</span>
-                          </div>
-
-                          {msg.actionCard.status === 'pending' && (
-                            <div className='flex items-center gap-2 pt-1'>
-                              <Button
-                                size='sm'
-                                className='h-7 text-[11px] bg-primary text-primary-foreground hover:bg-primary/90 rounded-md font-medium px-3 shadow-none'
-                                onClick={() => handleActionConfirm(msg.actionCard!.id, msg.actionCard!.contactEmail, msg.actionCard!.contactName)}
-                              >
-                                <span>{msg.actionCard.confirmLabel}</span>
-                              </Button>
-                              <Button
-                                size='sm'
-                                variant='outline'
-                                className='h-7 text-[11px] rounded-md font-medium text-muted-foreground hover:text-foreground px-3 shadow-none bg-background'
-                                onClick={() => handleActionDismiss(msg.actionCard!.id)}
-                              >
-                                <span>{msg.actionCard.cancelLabel || 'Later / No'}</span>
-                              </Button>
-                            </div>
+                {/* Suggestions list (Simple English Freight Forwarding) */}
+                <div className='flex flex-col gap-3 text-left pl-2 pt-2 border-t border-border/30'>
+                  <button
+                    onClick={() => handleSend('Check invoice status')}
+                    className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
+                  >
+                    <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
+                    <span>Check invoice status</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend('Create a new service quotation for ocean freight')}
+                    className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
+                  >
+                    <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
+                    <span>Create service quotation</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend('Track shipment container OOLU2800014')}
+                    className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
+                  >
+                    <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
+                    <span>Track shipment container</span>
+                  </button>
+                  <button
+                    onClick={() => handleSend('Check CEISA customs hold status')}
+                    className='flex items-center gap-3 text-sm text-foreground/80 hover:text-primary transition-colors py-1 group text-left outline-none'
+                  >
+                    <MessageSquareText className='size-4 text-muted-foreground/75 group-hover:text-primary shrink-0 transition-colors' />
+                    <span>Check CEISA customs status</span>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className='flex flex-col gap-6'>
+                {messages.map((msg, idx) => (
+                  <div
+                    key={msg.id}
+                    className={cn(
+                      'flex w-full leading-relaxed',
+                      msg.role === 'user' ? 'justify-end' : 'justify-start'
+                    )}
+                  >
+                    {msg.role === 'user' ? (
+                      /* User message: Styled with min-h-8 and rounded-md to match X button, no avatar */
+                      <div className='rounded-md px-3 py-1 min-h-8 flex items-center text-xs bg-sidebar-accent/80 text-foreground border border-sidebar-border max-w-[85%] shadow-xs'>
+                        {msg.content}
+                      </div>
+                    ) : (
+                      /* AI message: Label and timestamp, text directly below */
+                      <div className='flex flex-col gap-2 w-full text-xs text-foreground'>
+                        <div className='flex items-center justify-between shrink-0 text-foreground w-full'>
+                          <span className='text-xs font-semibold text-primary'>masbro</span>
+                          <span className='text-[10px] text-muted-foreground font-normal'>
+                            {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                          </span>
+                        </div>
+                        <div className='pl-0 text-foreground/90 font-sans leading-relaxed flex flex-col gap-1'>
+                          {formatMessageContent(msg.content)}
+                          {isLoading && idx === messages.length - 1 && (
+                            <span className='inline-block size-2 bg-primary animate-pulse rounded-full ml-1 align-middle' />
                           )}
 
-                          {msg.actionCard.status === 'confirmed' && (
-                            <div className='flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 pt-0.5'>
-                              <CheckCircle2 className='size-4' />
-                              <span>Confirmed & Email Dispatched</span>
-                            </div>
-                          )}
+                          {/* Action Confirmation Card Component */}
+                          {msg.actionCard && (!isLoading || idx !== messages.length - 1) && (
+                            <div className='mt-2.5 p-3 rounded-lg border border-primary/25 bg-primary/5 dark:bg-primary/10 flex flex-col gap-2.5 shadow-xs'>
+                              <div className='flex items-center justify-between gap-2'>
+                                <div className='text-xs font-semibold text-foreground'>
+                                  <span>{msg.actionCard.title}</span>
+                                </div>
+                                <span className='text-[10px] px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20 shrink-0 font-normal'>
+                                  Action Required
+                                </span>
+                              </div>
 
-                          {msg.actionCard.status === 'dismissed' && (
-                            <div className='text-[11px] font-medium text-muted-foreground italic pt-0.5'>
-                              Aksi ditunda (Deferred).
+                              <div className='text-[11px] text-muted-foreground flex flex-col gap-0.5 pl-0.5'>
+                                <span>Penerima: <strong className='text-foreground font-medium'>{msg.actionCard.contactName}</strong> ({msg.actionCard.contactEmail})</span>
+                              </div>
+
+                              {msg.actionCard.status === 'pending' && (
+                                <div className='flex items-center gap-2 pt-1'>
+                                  <Button
+                                    size='sm'
+                                    className='h-7 text-[11px] bg-primary text-primary-foreground hover:bg-primary/90 rounded-md font-medium px-3 shadow-none'
+                                    onClick={() => handleActionConfirm(msg.actionCard!.id, msg.actionCard!.contactEmail, msg.actionCard!.contactName)}
+                                  >
+                                    <span>{msg.actionCard.confirmLabel}</span>
+                                  </Button>
+                                  <Button
+                                    size='sm'
+                                    variant='outline'
+                                    className='h-7 text-[11px] rounded-md font-medium text-muted-foreground hover:text-foreground px-3 shadow-none bg-background'
+                                    onClick={() => handleActionDismiss(msg.actionCard!.id)}
+                                  >
+                                    <span>{msg.actionCard.cancelLabel || 'Later'}</span>
+                                  </Button>
+                                </div>
+                              )}
+
+                              {msg.actionCard.status === 'confirmed' && (
+                                <div className='flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 pt-0.5'>
+                                  <CheckCircle2 className='size-4' />
+                                  <span>Confirmed & Email Dispatched</span>
+                                </div>
+                              )}
+
+                              {msg.actionCard.status === 'dismissed' && (
+                                <div className='text-[11px] font-medium text-muted-foreground italic pt-0.5'>
+                                  Aksi ditunda (Deferred).
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
-                      )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {/* Typing Loader */}
+                {isLoading && (
+                  <div className='flex flex-col gap-2 w-full text-xs text-foreground items-start'>
+                    <div className='flex items-center justify-between shrink-0 text-foreground w-full animate-pulse'>
+                      <span className='text-xs font-semibold text-primary'>masbro</span>
+                      <span className='text-[10px] text-muted-foreground font-normal'>
+                        {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}
+                      </span>
+                    </div>
+                    <div className='flex gap-1 items-center pl-1 py-1'>
+                      <span className='size-1.5 bg-muted-foreground/50 rounded-full animate-bounce delay-75' />
+                      <span className='size-1.5 bg-muted-foreground/50 rounded-full animate-bounce delay-150' />
+                      <span className='size-1.5 bg-muted-foreground/50 rounded-full animate-bounce delay-300' />
                     </div>
                   </div>
                 )}
-              </div>
-            ))}
-
-            {/* Typing Loader */}
-            {isLoading && (
-              <div className='flex flex-col gap-2 w-full text-xs text-foreground items-start'>
-                <div className='flex items-center shrink-0 text-primary animate-pulse'>
-                  <span className='text-xs font-semibold'>masbro</span><span className='text-[10px] text-primary/70 mx-0.5'>|</span><span className='text-[10px]'>{new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
-                </div>
-                <div className='flex gap-1 items-center pl-1 py-1'>
-                  <span className='size-1.5 bg-muted-foreground/50 rounded-full animate-bounce delay-75' />
-                  <span className='size-1.5 bg-muted-foreground/50 rounded-full animate-bounce delay-150' />
-                  <span className='size-1.5 bg-muted-foreground/50 rounded-full animate-bounce delay-300' />
-                </div>
+                <div ref={chatEndRef} />
               </div>
             )}
-            <div ref={chatEndRef} />
           </div>
-        )}
-      </div>
 
-      {/* ===== Chat Input / Footer ===== */}
-      <div className='px-4 pt-4 pb-2 border-t-0 flex flex-col gap-2 bg-background shrink-0'>
-        <div className='relative rounded-xl border border-sidebar-border bg-background flex flex-col p-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-ring'>
-          <textarea
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault()
-                handleSend(input)
-              }
-            }}
-            placeholder='Ask masbro'
-            className='w-full min-h-[36px] max-h-32 resize-none bg-transparent outline-none border-none text-xs text-foreground placeholder-muted-foreground'
-            rows={1}
-          />
-          <div className='flex items-center justify-between pt-2'>
-            <div className='flex items-center gap-1'>
-              <Button variant='ghost' size='icon' className='size-7 text-muted-foreground rounded-md'>
-                <Paperclip className='size-4' />
-              </Button>
-              <Button variant='ghost' size='icon' className='size-7 text-muted-foreground rounded-md'>
-                <SlidersHorizontal className='size-4' />
-              </Button>
+          {/* ===== Chat Input / Footer ===== */}
+          <div className='px-4 pt-4 pb-2 border-t-0 flex flex-col gap-2 bg-background shrink-0'>
+            <div className='relative rounded-xl border border-sidebar-border bg-background flex flex-col p-2.5 focus-within:ring-1 focus-within:ring-ring focus-within:border-ring'>
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault()
+                    handleSend(input)
+                  }
+                }}
+                placeholder='Ask masbro'
+                className='w-full min-h-[36px] max-h-32 resize-none bg-transparent outline-none border-none text-xs text-foreground placeholder-muted-foreground'
+                rows={1}
+              />
+              <div className='flex items-center justify-between pt-2'>
+                <div className='flex items-center gap-1'>
+                  <Button variant='ghost' size='icon' className='size-7 text-muted-foreground rounded-md'>
+                    <Paperclip className='size-4' />
+                  </Button>
+                  <Button variant='ghost' size='icon' className='size-7 text-muted-foreground rounded-md'>
+                    <SlidersHorizontal className='size-4' />
+                  </Button>
+                </div>
+                <Button
+                  size='icon'
+                  className={cn(
+                    'size-7 rounded-md transition-all shadow-none',
+                    input.trim() ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground cursor-not-allowed'
+                  )}
+                  disabled={!input.trim() || isLoading}
+                  onClick={() => handleSend(input)}
+                >
+                  <ArrowUp className='size-4' />
+                </Button>
+              </div>
             </div>
-            <Button
-              size='icon'
-              className={cn(
-                'size-7 rounded-md transition-all shadow-none',
-                input.trim() ? 'bg-primary text-primary-foreground' : 'bg-muted/40 text-muted-foreground cursor-not-allowed'
-              )}
-              disabled={!input.trim() || isLoading}
-              onClick={() => handleSend(input)}
-            >
-              <ArrowUp className='size-4' />
-            </Button>
+            <span className='text-[10px] text-center text-muted-foreground leading-normal'>
+              masbro can make mistakes. <a href='#' className='underline hover:text-foreground'>Learn more</a>
+            </span>
           </div>
-        </div>
-        <span className='text-[10px] text-center text-muted-foreground leading-normal'>
-          masbro can make mistakes. <a href='#' className='underline hover:text-foreground'>Learn more</a>
-        </span>
-      </div>
         </>
       )}
     </>

@@ -1,6 +1,9 @@
-import { createFileRoute } from '@tanstack/react-router'
-import { SystemIntelligence } from '@/features/system-intelligence'
+import { createFileRoute, redirect } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/_authenticated/system-intelligence')({
-  component: SystemIntelligence,
+  beforeLoad: () => {
+    throw redirect({
+      to: '/admin-settings/system-intelligence',
+    })
+  },
 })

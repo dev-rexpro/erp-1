@@ -36,7 +36,9 @@ import {
   Palette,
   Bell,
   Monitor,
-  Database
+  Database,
+  Cpu,
+  Sparkles
 } from 'lucide-react'
 
 export interface SubTabItem {
@@ -130,6 +132,7 @@ export const MODULE_TAB_GROUPS: ModuleTabGroup[] = [
       { title: 'Module Control', url: '/admin-settings/modules', icon: Layers },
       { title: 'System Audit Logs', url: '/admin-settings/audit-logs', icon: FileSpreadsheet },
       { title: 'Security Policies', url: '/admin-settings/security', icon: Lock },
+      { title: 'System Intelligence', url: '/admin-settings/system-intelligence', icon: Cpu },
     ],
   },
   {
@@ -144,6 +147,7 @@ export const MODULE_TAB_GROUPS: ModuleTabGroup[] = [
       { title: 'Notifications', url: '/settings/notifications', icon: Bell },
       { title: 'Display', url: '/settings/display', icon: Monitor },
       { title: 'Data Management', url: '/settings/data', icon: Database },
+      { title: 'System Intelligence', url: '/settings/intelligence', icon: Sparkles },
     ],
   },
 ]

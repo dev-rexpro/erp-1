@@ -37,6 +37,7 @@ import { Route as AuthenticatedAdminSettingsAuditLogsRouteImport } from './route
 import { Route as AuthenticatedAdminSettingsModulesRouteImport } from './routes/_authenticated/admin-settings/modules'
 import { Route as AuthenticatedAdminSettingsRolesRouteImport } from './routes/_authenticated/admin-settings/roles'
 import { Route as AuthenticatedAdminSettingsSecurityRouteImport } from './routes/_authenticated/admin-settings/security'
+import { Route as AuthenticatedAdminSettingsSystemIntelligenceRouteImport } from './routes/_authenticated/admin-settings/system-intelligence'
 import { Route as AuthenticatedAdminSettingsUsersRouteImport } from './routes/_authenticated/admin-settings/users'
 import { Route as AuthenticatedChatsIndexRouteImport } from './routes/_authenticated/chats/index'
 import { Route as AuthenticatedCommercialClientAccountsRouteImport } from './routes/_authenticated/commercial/client-accounts'
@@ -67,6 +68,7 @@ import { Route as AuthenticatedSettingsAppearanceRouteImport } from './routes/_a
 import { Route as AuthenticatedSettingsCompanyRouteImport } from './routes/_authenticated/settings/company'
 import { Route as AuthenticatedSettingsDataRouteImport } from './routes/_authenticated/settings/data'
 import { Route as AuthenticatedSettingsDisplayRouteImport } from './routes/_authenticated/settings/display'
+import { Route as AuthenticatedSettingsIntelligenceRouteImport } from './routes/_authenticated/settings/intelligence'
 import { Route as AuthenticatedSettingsNotificationsRouteImport } from './routes/_authenticated/settings/notifications'
 import { Route as AuthenticatedUsersIndexRouteImport } from './routes/_authenticated/users/index'
 
@@ -218,6 +220,12 @@ const AuthenticatedAdminSettingsSecurityRoute =
   AuthenticatedAdminSettingsSecurityRouteImport.update({
     id: '/security',
     path: '/security',
+    getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
+  } as any)
+const AuthenticatedAdminSettingsSystemIntelligenceRoute =
+  AuthenticatedAdminSettingsSystemIntelligenceRouteImport.update({
+    id: '/system-intelligence',
+    path: '/system-intelligence',
     getParentRoute: () => AuthenticatedAdminSettingsRouteRoute,
   } as any)
 const AuthenticatedAdminSettingsUsersRoute =
@@ -399,6 +407,12 @@ const AuthenticatedSettingsDisplayRoute =
     path: '/display',
     getParentRoute: () => AuthenticatedSettingsRouteRoute,
   } as any)
+const AuthenticatedSettingsIntelligenceRoute =
+  AuthenticatedSettingsIntelligenceRouteImport.update({
+    id: '/intelligence',
+    path: '/intelligence',
+    getParentRoute: () => AuthenticatedSettingsRouteRoute,
+  } as any)
 const AuthenticatedSettingsNotificationsRoute =
   AuthenticatedSettingsNotificationsRouteImport.update({
     id: '/notifications',
@@ -438,6 +452,7 @@ export interface FileRoutesByFullPath {
   '/admin-settings/modules': typeof AuthenticatedAdminSettingsModulesRoute
   '/admin-settings/roles': typeof AuthenticatedAdminSettingsRolesRoute
   '/admin-settings/security': typeof AuthenticatedAdminSettingsSecurityRoute
+  '/admin-settings/system-intelligence': typeof AuthenticatedAdminSettingsSystemIntelligenceRoute
   '/admin-settings/users': typeof AuthenticatedAdminSettingsUsersRoute
   '/commercial/client-accounts': typeof AuthenticatedCommercialClientAccountsRoute
   '/commercial/client-contracts': typeof AuthenticatedCommercialClientContractsRoute
@@ -465,6 +480,7 @@ export interface FileRoutesByFullPath {
   '/settings/company': typeof AuthenticatedSettingsCompanyRoute
   '/settings/data': typeof AuthenticatedSettingsDataRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
+  '/settings/intelligence': typeof AuthenticatedSettingsIntelligenceRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin-settings/': typeof AuthenticatedAdminSettingsIndexRoute
   '/chats/': typeof AuthenticatedChatsIndexRoute
@@ -497,6 +513,7 @@ export interface FileRoutesByTo {
   '/admin-settings/modules': typeof AuthenticatedAdminSettingsModulesRoute
   '/admin-settings/roles': typeof AuthenticatedAdminSettingsRolesRoute
   '/admin-settings/security': typeof AuthenticatedAdminSettingsSecurityRoute
+  '/admin-settings/system-intelligence': typeof AuthenticatedAdminSettingsSystemIntelligenceRoute
   '/admin-settings/users': typeof AuthenticatedAdminSettingsUsersRoute
   '/commercial/client-accounts': typeof AuthenticatedCommercialClientAccountsRoute
   '/commercial/client-contracts': typeof AuthenticatedCommercialClientContractsRoute
@@ -524,6 +541,7 @@ export interface FileRoutesByTo {
   '/settings/company': typeof AuthenticatedSettingsCompanyRoute
   '/settings/data': typeof AuthenticatedSettingsDataRoute
   '/settings/display': typeof AuthenticatedSettingsDisplayRoute
+  '/settings/intelligence': typeof AuthenticatedSettingsIntelligenceRoute
   '/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/admin-settings': typeof AuthenticatedAdminSettingsIndexRoute
   '/chats': typeof AuthenticatedChatsIndexRoute
@@ -560,6 +578,7 @@ export interface FileRoutesById {
   '/_authenticated/admin-settings/modules': typeof AuthenticatedAdminSettingsModulesRoute
   '/_authenticated/admin-settings/roles': typeof AuthenticatedAdminSettingsRolesRoute
   '/_authenticated/admin-settings/security': typeof AuthenticatedAdminSettingsSecurityRoute
+  '/_authenticated/admin-settings/system-intelligence': typeof AuthenticatedAdminSettingsSystemIntelligenceRoute
   '/_authenticated/admin-settings/users': typeof AuthenticatedAdminSettingsUsersRoute
   '/_authenticated/commercial/client-accounts': typeof AuthenticatedCommercialClientAccountsRoute
   '/_authenticated/commercial/client-contracts': typeof AuthenticatedCommercialClientContractsRoute
@@ -587,6 +606,7 @@ export interface FileRoutesById {
   '/_authenticated/settings/company': typeof AuthenticatedSettingsCompanyRoute
   '/_authenticated/settings/data': typeof AuthenticatedSettingsDataRoute
   '/_authenticated/settings/display': typeof AuthenticatedSettingsDisplayRoute
+  '/_authenticated/settings/intelligence': typeof AuthenticatedSettingsIntelligenceRoute
   '/_authenticated/settings/notifications': typeof AuthenticatedSettingsNotificationsRoute
   '/_authenticated/admin-settings/': typeof AuthenticatedAdminSettingsIndexRoute
   '/_authenticated/chats/': typeof AuthenticatedChatsIndexRoute
@@ -623,6 +643,7 @@ export interface FileRouteTypes {
     | '/admin-settings/modules'
     | '/admin-settings/roles'
     | '/admin-settings/security'
+    | '/admin-settings/system-intelligence'
     | '/admin-settings/users'
     | '/commercial/client-accounts'
     | '/commercial/client-contracts'
@@ -650,6 +671,7 @@ export interface FileRouteTypes {
     | '/settings/company'
     | '/settings/data'
     | '/settings/display'
+    | '/settings/intelligence'
     | '/settings/notifications'
     | '/admin-settings/'
     | '/chats/'
@@ -682,6 +704,7 @@ export interface FileRouteTypes {
     | '/admin-settings/modules'
     | '/admin-settings/roles'
     | '/admin-settings/security'
+    | '/admin-settings/system-intelligence'
     | '/admin-settings/users'
     | '/commercial/client-accounts'
     | '/commercial/client-contracts'
@@ -709,6 +732,7 @@ export interface FileRouteTypes {
     | '/settings/company'
     | '/settings/data'
     | '/settings/display'
+    | '/settings/intelligence'
     | '/settings/notifications'
     | '/admin-settings'
     | '/chats'
@@ -744,6 +768,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin-settings/modules'
     | '/_authenticated/admin-settings/roles'
     | '/_authenticated/admin-settings/security'
+    | '/_authenticated/admin-settings/system-intelligence'
     | '/_authenticated/admin-settings/users'
     | '/_authenticated/commercial/client-accounts'
     | '/_authenticated/commercial/client-contracts'
@@ -771,6 +796,7 @@ export interface FileRouteTypes {
     | '/_authenticated/settings/company'
     | '/_authenticated/settings/data'
     | '/_authenticated/settings/display'
+    | '/_authenticated/settings/intelligence'
     | '/_authenticated/settings/notifications'
     | '/_authenticated/admin-settings/'
     | '/_authenticated/chats/'
@@ -993,6 +1019,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminSettingsSecurityRouteImport
       parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
     }
+    '/_authenticated/admin-settings/system-intelligence': {
+      id: '/_authenticated/admin-settings/system-intelligence'
+      path: '/system-intelligence'
+      fullPath: '/admin-settings/system-intelligence'
+      preLoaderRoute: typeof AuthenticatedAdminSettingsSystemIntelligenceRouteImport
+      parentRoute: typeof AuthenticatedAdminSettingsRouteRoute
+    }
     '/_authenticated/admin-settings/users': {
       id: '/_authenticated/admin-settings/users'
       path: '/users'
@@ -1203,6 +1236,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSettingsDisplayRouteImport
       parentRoute: typeof AuthenticatedSettingsRouteRoute
     }
+    '/_authenticated/settings/intelligence': {
+      id: '/_authenticated/settings/intelligence'
+      path: '/intelligence'
+      fullPath: '/settings/intelligence'
+      preLoaderRoute: typeof AuthenticatedSettingsIntelligenceRouteImport
+      parentRoute: typeof AuthenticatedSettingsRouteRoute
+    }
     '/_authenticated/settings/notifications': {
       id: '/_authenticated/settings/notifications'
       path: '/notifications'
@@ -1225,6 +1265,7 @@ interface AuthenticatedAdminSettingsRouteRouteChildren {
   AuthenticatedAdminSettingsModulesRoute: typeof AuthenticatedAdminSettingsModulesRoute
   AuthenticatedAdminSettingsRolesRoute: typeof AuthenticatedAdminSettingsRolesRoute
   AuthenticatedAdminSettingsSecurityRoute: typeof AuthenticatedAdminSettingsSecurityRoute
+  AuthenticatedAdminSettingsSystemIntelligenceRoute: typeof AuthenticatedAdminSettingsSystemIntelligenceRoute
   AuthenticatedAdminSettingsUsersRoute: typeof AuthenticatedAdminSettingsUsersRoute
   AuthenticatedAdminSettingsIndexRoute: typeof AuthenticatedAdminSettingsIndexRoute
 }
@@ -1238,6 +1279,8 @@ const AuthenticatedAdminSettingsRouteRouteChildren: AuthenticatedAdminSettingsRo
     AuthenticatedAdminSettingsRolesRoute: AuthenticatedAdminSettingsRolesRoute,
     AuthenticatedAdminSettingsSecurityRoute:
       AuthenticatedAdminSettingsSecurityRoute,
+    AuthenticatedAdminSettingsSystemIntelligenceRoute:
+      AuthenticatedAdminSettingsSystemIntelligenceRoute,
     AuthenticatedAdminSettingsUsersRoute: AuthenticatedAdminSettingsUsersRoute,
     AuthenticatedAdminSettingsIndexRoute: AuthenticatedAdminSettingsIndexRoute,
   }
@@ -1253,6 +1296,7 @@ interface AuthenticatedSettingsRouteRouteChildren {
   AuthenticatedSettingsCompanyRoute: typeof AuthenticatedSettingsCompanyRoute
   AuthenticatedSettingsDataRoute: typeof AuthenticatedSettingsDataRoute
   AuthenticatedSettingsDisplayRoute: typeof AuthenticatedSettingsDisplayRoute
+  AuthenticatedSettingsIntelligenceRoute: typeof AuthenticatedSettingsIntelligenceRoute
   AuthenticatedSettingsNotificationsRoute: typeof AuthenticatedSettingsNotificationsRoute
   AuthenticatedSettingsIndexRoute: typeof AuthenticatedSettingsIndexRoute
 }
@@ -1264,6 +1308,8 @@ const AuthenticatedSettingsRouteRouteChildren: AuthenticatedSettingsRouteRouteCh
     AuthenticatedSettingsCompanyRoute: AuthenticatedSettingsCompanyRoute,
     AuthenticatedSettingsDataRoute: AuthenticatedSettingsDataRoute,
     AuthenticatedSettingsDisplayRoute: AuthenticatedSettingsDisplayRoute,
+    AuthenticatedSettingsIntelligenceRoute:
+      AuthenticatedSettingsIntelligenceRoute,
     AuthenticatedSettingsNotificationsRoute:
       AuthenticatedSettingsNotificationsRoute,
     AuthenticatedSettingsIndexRoute: AuthenticatedSettingsIndexRoute,

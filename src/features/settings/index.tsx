@@ -1,5 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
-import { Monitor, Bell, Palette, Wrench, UserCog, Building, Database } from 'lucide-react'
+import { Monitor, Bell, Palette, Wrench, UserCog, Building, Database, Cpu } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Header } from '@/components/layout/header'
 import { Main } from '@/components/layout/main'
@@ -42,6 +42,11 @@ const sidebarNavItems = [
     title: 'Data Management',
     href: '/settings/data',
     icon: <Database size={18} />,
+  },
+  {
+    title: 'System Intelligence',
+    href: '/settings/intelligence',
+    icon: <Cpu size={18} />,
   },
 ]
 
