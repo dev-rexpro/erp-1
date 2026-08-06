@@ -1,4 +1,3 @@
-```markdown
 # 🚀 ERP One (REXCorp)
 > **Metadata-Driven Modular Enterprise ERP for Export-Import & Freight Forwarding**  
 > *Powered by **Snowflake Data Cloud**, **Snowflake Cortex AI**, and **CoCo CLI Daemon** for the **CoCo CLI Hackathon 2026**.*
@@ -241,7 +240,3 @@ Looking ahead, we envision ERP One expanding into an open, highly modular enterp
 ## 📄 License
 
 This project is licensed under the MIT License.
-
-```
-
-```
